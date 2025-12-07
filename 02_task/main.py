@@ -1,3 +1,7 @@
+import heapq
+from turtle import pos
+
+# My naive implementation
 def merge_k_lists(lists: list[list]) -> list:
     size = len(lists)
     result = []
@@ -29,6 +33,38 @@ def merge_k_lists(lists: list[list]) -> list:
     return result
 
 
+# implementation based on heapqueue (optimized solution based on reasearch, 
+#  not initial implementation)
+def merge_k_lists_v2(lists: list[list]) -> list:
+    result = []
+    hq = []
+
+    # initialise heapqueue with the first elements of the lists
+    for i in range(len(lists)):
+        if not lists[i]:  # skip empty list
+            continue
+        # element of a heap is a tuple (val, list index, position in the list)
+        # heapq uses lexicographical order (from left element to rigth)
+        #  to compare elements
+        el = (lists[i][0], i, 0)
+        heapq.heappush(hq, el)
+
+    while hq:
+        head_element = heapq.heappop(hq)
+        value, list_idx, position = head_element
+        result.append(value)
+        # add to the heap next element from the list which element has been
+        # added to the result
+        if position < len(lists[list_idx]) - 1:
+            position += 1
+            el = (lists[list_idx][position], list_idx, position)
+            heapq.heappush(hq, el)
+
+    return result
+
+
 lists = [[1, 4, 5], [1, 3, 4], [2, 6]]
 merged_list = merge_k_lists(lists)
+print("Відсортований список:", merged_list)
+merged_list = merge_k_lists_v2(lists)
 print("Відсортований список:", merged_list)
